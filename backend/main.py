@@ -1,10 +1,9 @@
-"""Backend principal"""
-
 from fastapi import FastAPI
 import threading
 
 from data_source import leer_datos_simulados
 from control import evaluar_co2
+from database import guardar
 
 app = FastAPI()
 
@@ -20,10 +19,13 @@ def loop_datos():
         # guardar último dato
         ultimo_dato.update(datos)
 
-        # guardar historial
+        # historial
         historial.append(datos)
         if len(historial) > 100:
             historial.pop(0)
+
+        # guardar en Influx
+        guardar(datos)
 
         # lógica CO2
         accion = evaluar_co2(datos)
@@ -33,7 +35,7 @@ def loop_datos():
             co2_estado["activo"] = (accion == "CO2_ON")
 
 
-# hilo en paralelo
+# hilo paralelo
 threading.Thread(target=loop_datos, daemon=True).start()
 
 

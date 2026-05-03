@@ -1,6 +1,8 @@
 import time
 import random
 
+MODO = "simulado"  # luego cambias a "serial"
+
 
 def leer_datos_simulados():
     while True:

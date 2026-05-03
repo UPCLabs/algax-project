@@ -5,7 +5,6 @@ def evaluar_co2(datos):
     global co2_activo
 
     ph = datos["ph"]
-
     accion = None
 
     if ph > 7.5 and not co2_activo:
