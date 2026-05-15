@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-05-15T12:34:56Z",
+  "sensores": {
+    "temp": 0.2526,
+    "lux": 0.52,
+    "ph": 50505
+  },
+  "relays": {
+    "temp": true,
+    "resistencia": false
+  }
+}
+
+
+{
+  "cmd": "relay",
+  "name": "valvula",
+  "action": "off"
+}
