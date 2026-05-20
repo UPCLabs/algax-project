@@ -1,13 +1,192 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌊 Alba - Dashboard de Sensores</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-water"></i>
+                    <h1>Alba</h1>
+                </div>
+                <p class="subtitle">Sistema de Monitoreo de Sensores</p>
+            </div>
+            <div class="header-right">
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Conectando...</span>
+                </div>
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    <span>LIVE</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Cards -->
+            <section class="stats-section">
+                <div class="stat-card ph-card">
+                    <div class="stat-icon"><i class="fas fa-tint"></i></div>
+                    <div class="stat-info">
+                        <p class="stat-label">pH</p>
+                        <p class="stat-value" id="phValue">--</p>
+                        <p class="stat-unit">unidades</p>
+                    </div>
+                    <div class="stat-gauge">
+                        <div class="gauge-bar"><div class="gauge-fill" id="phGauge" style="width: 50%"></div></div>
+                    </div>
+                </div>
+
+                <div class="stat-card temp-card">
+                    <div class="stat-icon"><i class="fas fa-thermometer-half"></i></div>
+                    <div class="stat-info">
+                        <p class="stat-label">Temperatura</p>
+                        <p class="stat-value" id="tempValue">--</p>
+                        <p class="stat-unit">°C</p>
+                    </div>
+                    <div class="stat-gauge">
+                        <div class="gauge-bar"><div class="gauge-fill" id="tempGauge" style="width: 50%"></div></div>
+                    </div>
+                </div>
+
+                <div class="stat-card lux-card">
+                    <div class="stat-icon"><i class="fas fa-sun"></i></div>
+                    <div class="stat-info">
+                        <p class="stat-label">Luz</p>
+                        <p class="stat-value" id="luxValue">--</p>
+                        <p class="stat-unit">lux</p>
+                    </div>
+                    <div class="stat-gauge">
+                        <div class="gauge-bar"><div class="gauge-fill" id="luxGauge" style="width: 50%"></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-tint"></i> pH en Tiempo Real</h2>
+                        <span class="chart-badge">Últimos 5 minutos</span>
+                    </div>
+                    <div id="phChart" class="chart"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-thermometer-half"></i> Temperatura en Tiempo Real</h2>
+                        <span class="chart-badge">Últimos 5 minutos</span>
+                    </div>
+                    <div id="tempChart" class="chart"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-sun"></i> Luz en Tiempo Real</h2>
+                        <span class="chart-badge">Últimos 5 minutos</span>
+                    </div>
+                    <div id="luxChart" class="chart"></div>
+                </div>
+            </section>
+
+            <!-- Controls Section -->
+            <section class="controls-section">
+                <h2><i class="fas fa-sliders-h"></i> Control de Actuadores</h2>
+                <div class="controls-grid">
+                    <div class="control-card">
+                        <div class="control-icon"><i class="fas fa-valve"></i></div>
+                        <div class="control-info">
+                            <h3>Válvula pH</h3>
+                            <p>Control de fluidos para pH</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="valvulaToggle" data-relay="valvula">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="control-status" id="valvulaStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-label">Apagado</span>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <div class="control-icon"><i class="fas fa-fire"></i></div>
+                        <div class="control-info">
+                            <h3>Resistencia</h3>
+                            <p>Calentamiento de agua</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="resistenciaToggle" data-relay="resistencia">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="control-status" id="resistenciaStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-label">Apagado</span>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <div class="control-icon"><i class="fas fa-lightbulb"></i></div>
+                        <div class="control-info">
+                            <h3>LED / Luz</h3>
+                            <p>Iluminación artificial</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="ledToggle" data-relay="led">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="control-status" id="ledStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-label">Apagado</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section class="history-section">
+                <div class="history-header">
+                    <h2><i class="fas fa-history"></i> Historial de Datos</h2>
+                    <button class="btn-refresh" id="refreshHistory">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+                <div class="history-table-container">
+                    <table class="history-table" id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Fecha y Hora</th>
+                                <th>pH</th>
+                                <th>Temperatura (°C)</th>
+                                <th>Luz (lux)</th>
+                                <th>Estado Actuadores</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <tr><td colspan="5" class="loading">Cargando historial...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Alba System - Monitoreo de Sensores en Tiempo Real</p>
+            <p class="footer-note"><i class="fas fa-info-circle"></i> Datos actualizados automáticamente cada segundo</p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
 </html>
